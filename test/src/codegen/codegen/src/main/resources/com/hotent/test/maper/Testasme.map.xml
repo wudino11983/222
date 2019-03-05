@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.hotent.test.model.test.Testasme">
+	<resultMap id="Testasme" type="com.hotent.test.model.test.Testasme">
+		<id property="id" column="ID" jdbcType="NUMERIC"/>
+		<result property="username" column="F_USERNAME" jdbcType="VARCHAR"/>
+		<result property="sex" column="F_SEX" jdbcType="NUMERIC"/>
+	</resultMap>
+	
+
+	<sql id="columns">
+		ID,F_USERNAME,F_SEX
+	</sql>
+	<sql id="wfColumns">
+		ID,F_USERNAME,F_SEX
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="@Ognl@isNotEmpty(username)"> AND F_USERNAME  LIKE '%${username}%'  </if>
+			<if test="@Ognl@isNotEmpty(sex)"> AND F_SEX  =#{sex} </if>
+		</where>
+	</sql>
+
+	<insert id="add" parameterType="com.hotent.test.model.test.Testasme">
+		INSERT INTO W_TESTASME
+		(ID,
+		F_USERNAME,F_SEX)
+		VALUES
+		(#{id,jdbcType=NUMERIC},
+		#{username,jdbcType=VARCHAR}, #{sex,jdbcType=NUMERIC})
+	</insert>
+	
+	<delete id="delById" parameterType="java.lang.Long">
+		DELETE FROM W_TESTASME 
+		WHERE
+		ID=#{id}
+	</delete>
+	
+	<update id="update" parameterType="com.hotent.test.model.test.Testasme">
+		UPDATE W_TESTASME SET
+		F_USERNAME=#{username,jdbcType=VARCHAR},
+		F_SEX=#{sex,jdbcType=NUMERIC}
+		WHERE
+		ID=#{id}
+	</update>
+	
+		    
+	<select id="getById" parameterType="java.lang.Long" resultMap="Testasme">
+		SELECT <include refid="columns"/>
+		FROM W_TESTASME
+		WHERE
+		ID=#{id}
+	</select>
+	
+	<select id="getAll" resultMap="Testasme">
+		SELECT <include refid="columns"/>
+		FROM W_TESTASME   
+		<include refid="dynamicWhere" />
+		<if test="@Ognl@isNotEmpty(orderField)">
+		order by ${orderField} ${orderSeq}
+		</if>
+		<if test="@Ognl@isEmpty(orderField)">
+		order by ID  desc
+		</if>
+	</select>
+	
+	
+	
+</mapper>
